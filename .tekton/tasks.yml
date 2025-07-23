@@ -4,14 +4,18 @@ metadata:
   name: cleanup
 spec:
   description: This task will clean up a workspace by deleting all the files.
-  workspace:
+  volumes:
     - name: source
+      emptyDir: {}
   steps:
     - name: remove
       image: alpine:3
       env:
         - name: WORKSPACE_SOURCE_PATH
-          value: $(workspaces.source.path)
+          value: /workspace/source
+      volumeMounts:
+        - name: source
+          mountPath: /workspace/source
       workingDir: $(workspaces.source.path)
       securityContext:
         runAsNonRoot: false
@@ -38,8 +42,9 @@ kind: Task
 metadata:
   name: nose
 spec:
-  workspace:
+  volumes:
     - name: source
+      emptyDir: {}
   params:
     - name: args
       description: Arguments to pass to nose
